@@ -6,13 +6,16 @@ float sum(float test){
 	{
 		temp = test;
 		test += 1.0;
-		if (temp == test){
+		if (temp == test)
+		{
 			printf("%f \n", test);
 			break;
 		}
 	}
 	return test;
 }
+
+
 int main()
 {
 	float test = 0.0;
