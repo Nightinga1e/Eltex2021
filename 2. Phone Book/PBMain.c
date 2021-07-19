@@ -28,8 +28,10 @@ int main()
 				Show();
 				break;
 			case 3:
+				Find();
 				break;
 			case 4:
+				Del();
 				break;
 			case 5:
 				fl=5;
