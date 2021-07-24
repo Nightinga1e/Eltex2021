@@ -37,7 +37,7 @@ int main()
 				fl=5;
 				break;
 			default:
-				printf("\nWrong menu item.\n");
+				printf("\nWrong menu item\n");
 				fl = 5;
 				break;
 		}	

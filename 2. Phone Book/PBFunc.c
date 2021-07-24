@@ -15,12 +15,15 @@ void clrscr()
 {
 	printf("\e[1;1H\e[2J");
 }
+
+void trashclean()
+{
+	while(getchar()!='\n');
+}
 int Add()
 {	
 	clrscr();
-	char trash[20]; // some sort of crutch
-	fgets(trash,20, stdin);	
-		
+	trashclean();
 	printf("\n Enter name: \n");
 	fgets(my_pb[counter].name, 12, stdin);
 	
@@ -28,8 +31,8 @@ int Add()
 	fgets(my_pb[counter].number, 12, stdin);
 
 	counter++;
-	printf("\nPress any key to continue\n");	
-	getchar();
+	printf("\nPress Enter to continue\n");
+	trashclean();	
 	clrscr();
 	return 0;
 }
@@ -39,15 +42,18 @@ int Show()
 	clrscr();
 	for(int i=0; i<counter; i++)
 	{
-		printf("\n№ = %d", i + 1);
-		printf("\nName:\n");
-		puts(my_pb[i].name);
-		printf("Number:\n");
-		puts(my_pb[i].number);	
+		if(my_pb[i].name[0]!=0)
+		{
+			printf("\n№ = %d", i + 1);
+			printf("\nName:\n");
+			puts(my_pb[i].name);
+			printf("Number:\n");
+			puts(my_pb[i].number);	
+		}	
 	}
-	printf("\n Press any key to continue.\n");
+	printf("\n Press Enter to continue.\n");
 	getchar();
-	getchar();
+	trashclean();
 	clrscr();
 	return 0;
 }
@@ -55,8 +61,8 @@ int Show()
 int Find()
 {
 	clrscr();
-	char trash[20]; // some sort of crutch
-	fgets(trash,20, stdin);	
+	trashclean();
+	
 	char findname[12];
 	int findfl = 0;
 	int abonentnum = -1;
@@ -76,8 +82,8 @@ int Find()
 	{
 		printf("\n Can't find abonent. \n");
 	}
-	printf("\n Press any key to continue.\n");
-	getchar();
+	printf("\n Press Enter to continue.\n");
+	trashclean();
 	clrscr();
 	return abonentnum;
 }
@@ -92,18 +98,13 @@ int Del()
 		scanf("%d", &item);
 		if(item==1)
 		{
-			for(int i = 0; i < 12; i++)
-			{
-				my_pb[abonentnum].name[i] = 0;
-				my_pb[abonentnum].number[i] = 0;
-			}
-			printf("\n Abonent deleted. \n");
+			my_pb[abonentnum].name[0] = 0;
+			my_pb[abonentnum].number[0] = 0;
 		}
-	}
-
-	printf("\n Press any key to continue. \n");
+	printf("\n Deleted. Press Enter to continue. \n");
 	getchar();
-	getchar();
+	trashclean();
 	clrscr();
+	}
 	return 0;
 }
