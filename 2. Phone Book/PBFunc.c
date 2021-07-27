@@ -10,7 +10,6 @@ struct PB
 struct PB my_pb[100];
 
 int counter = 0;
-
 void clrscr()
 {
 	printf("\e[1;1H\e[2J");
