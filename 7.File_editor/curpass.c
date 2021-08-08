@@ -21,7 +21,7 @@ void get_password(WINDOW *win, char *password, int max_len)
 			continue;
 		}
 		password[i++] = ch;
-		wechochar(win, '*');
+		//wechochar(win, '*');
 	}
 	password[i] = 0;
 	wechochar(win, '\n');
@@ -42,7 +42,7 @@ int main()
 	wnd = newwin(5, 23, 2, 2);
 	wbkgd(wnd, COLOR_PAIR(1));
 	wattron(wnd, A_BOLD);
-	keypad(wnd, FALSE);
+	keypad(wnd, TRUE);
 	wprintw(wnd, "Enter password...\n");
 	get_password(wnd, pass, MAX_LEN);
 	wattron(wnd, A_BLINK);
