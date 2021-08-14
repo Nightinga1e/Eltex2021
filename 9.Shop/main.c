@@ -7,33 +7,102 @@
 #define NUMOFSHOPS 5
 #define NUMOFCUSTOMERS 3
 
-void *custbuy(void *args)
+struct arg_st
 {
-	printf("\n I am customer\n");
+	int number;
+	int result;
+	int shops[NUMOFSHOPS];
+	pthread_mutex_t strmutex[NUMOFSHOPS+1];
+};
+
+void *custbuy(void *arg)
+{
+	int mynum = 0;
+	int myresult = 0;
+	int req = 10000;
+	int randshop = 0;
+	int buf = 0;
+	pthread_mutex_t mutex[NUMOFSHOPS+1];
+	struct arg_st *arguments = (struct arg_st *)arg;
+	mutex[NUMOFSHOPS] = arguments->strmutex[NUMOFSHOPS];
+
+	pthread_mutex_lock(&mutex[NUMOFSHOPS]);
+	mynum = arguments->number;
+	arguments->number += 1;
+	pthread_mutex_unlock(&mutex[NUMOFSHOPS]);
+
+	printf("\n My number is: %d\n", mynum);
+	while (req != 0)
+	{	
+		randshop = rand() % 5;
+		if(pthread_mutex_trylock(&mutex[randshop]) == 0)
+		{
+			buf = req;
+			if(arguments->shops[randshop] > 0)
+			{
+				req = req - arguments->shops[randshop];
+				arguments->shops[randshop] = 0;
+				if(req < 0)
+				{
+					printf("\n Took %d items from %d shop, requierment - %d \n", buf, randshop + 1, 0); 
+					arguments->shops[randshop] = arguments->shops[randshop] + ((-1)*req);
+					req = 0;
+				}else
+				{
+					printf("\n Took %d items from %d shop, requierment - %d \n", arguments->shops[randshop], randshop + 1, req); 	
+				}
+			}			
+			pthread_mutex_unlock(&mutex[randshop]);
+		}
+		sleep(2);	
+	}
+	arguments->result+=1;
+	pthread_exit(NULL);
+	return 0;
 }
 
-void *workerload(void *args)
+void *workerload(void *arg)
 {
-	printf("\nI am worker\n");
+	pthread_mutex_t mutex;
+	struct arg_st *arguments = (struct arg_st *)arg;
+	//mutex = arguments->strmutex;	
+	
+	while(3 != arguments->result)
+	{
+		printf("\n I am working \n");
+		sleep(1);		
+	}	
+	
+	pthread_exit(NULL);
+	return 0;
 }
 
 int main()
 {
-	int shops[NUMOFSHOPS];
+	int randitems = 0;
+	struct arg_st args;
+	args.number = 1;
+	args.result = 0;
 	pthread_t customers[NUMOFCUSTOMERS];
 	pthread_t worker;
+	srand(time(NULL));
+	
+	for(int i = 0; i<NUMOFSHOPS+1; i++)
+	{
+		pthread_mutex_init(&args.strmutex[i], NULL);
+	}
 
 	for (int i = 0; i < NUMOFSHOPS; i++)
 	{
-		shops[i] = 900 + rand() % 200;
-		printf("\nShop #%d have %d items\n", i+1, shops[i]); 
+		args.shops[i] = 900 + rand() % 200;
+		printf("\nShop #%d have %d items\n", i+1, args.shops[i]); 
 	}
 
 	for (int i =0; i< NUMOFCUSTOMERS; i++)
 	{
-		pthread_create(&customers[i], NULL, custbuy, NULL);
+		pthread_create(&customers[i], NULL, custbuy, (void *)&args);
 	}
-	pthread_create(&worker, NULL, workerload, NULL);
+	pthread_create(&worker, NULL, workerload, (void *)&args);
 	
 	for (int i =0; i< NUMOFCUSTOMERS; i++)
 	{
@@ -41,5 +110,9 @@ int main()
 	}
 	pthread_join(worker, NULL);
 
+	for (int i =0; i< NUMOFCUSTOMERS+1; i++)
+	{	
+		pthread_mutex_destroy(&args.strmutex[i]);
+	}	
 	return 0;
 }
