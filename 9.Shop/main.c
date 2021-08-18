@@ -4,9 +4,13 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#include "workerload.h"
+#include "custbuy.h"
+#include "struct.h"
+
 #define NUMOFSHOPS 5
 #define NUMOFCUSTOMERS 3
-
+/*
 struct arg_st
 {
 	int number;
@@ -14,7 +18,8 @@ struct arg_st
 	int shops[NUMOFSHOPS];
 	pthread_mutex_t strmutex[NUMOFSHOPS+1];
 };
-
+*/
+/*
 void *custbuy(void *arg)
 {
 	int mynum = 0;
@@ -85,6 +90,7 @@ void *workerload(void *arg)
 	pthread_exit(NULL);
 	return 0;
 }
+*/
 
 int main()
 {
