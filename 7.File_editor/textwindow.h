@@ -1,3 +1,5 @@
+#pragma once
+
 #include <curses.h>
 #include <sys/ioctl.h>
 
