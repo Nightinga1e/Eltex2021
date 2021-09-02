@@ -44,14 +44,14 @@ int main()
 	if (-1 == msgkey2) //при провале генерации
 	{
 		printf("\nftok error! \n");
-		return -1;
+		return -3;
 	}	
 
 	mqid2 = msgget(msgkey2, IPC_CREAT | 0666); //создание очереди сообщений, получение идентификатора
 	if (-1 == mqid2) // при провале создания 
 	{
 		printf("\nmsgget error!\n");
-		return -2;
+		return -4;
 	}
 
 	mypid = fork();
@@ -68,7 +68,7 @@ int main()
 		if(-1 == result) // в случае неудачи
 		{
 			printf("\nmsgsnd error!\n");
-			return -3;
+			return -5;
 		}	
 	}else
 	{//родитель
@@ -81,7 +81,7 @@ int main()
 		if(-1 == result) // при неудаче
 		{
 			printf("\nmsgget error!\n");
-			return -4;
+			return -6;
 		}
 		printf("\n%s\n", msg_st.message);
 		
@@ -91,14 +91,14 @@ int main()
 		if(-1 == result)
 		{
 			printf("\nmsgctl error!\n");
-			return -5;
+			return -7;
 		}
 
 		result = msgctl(mqid2, IPC_RMID, 0); //удаляем очередь
 		if(-1 == result)
 		{
 			printf("\nmsgctl error!\n");
-			return -5;
+			return -8;
 		}
 	}			
 	return 0;
