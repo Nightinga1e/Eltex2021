@@ -37,7 +37,7 @@ int main()
 	if((mqd_t)-1 == qds2) // при провале
 	{
 		printf("\nmq_open qds1 error!\n");
-		return -1;
+		return -2;
 	}	
 
 	mypid = fork();
@@ -47,7 +47,7 @@ int main()
 		if(-1 == result)//при неудаче
 		{
 			printf("\nmq_receive error!\n");
-			return -2;
+			return -3;
 		}
 		printf("\n%s\n", gettext);
 	}else
@@ -57,7 +57,7 @@ int main()
 		if(-1 == result)// при неудаче
 		{
 			printf("\nmq_send error!\n");
-			return -3;
+			return -4;
 		} 
 
 		wait(&wresult);
@@ -72,7 +72,7 @@ int main()
 		if (-1 == clresult)
 		{
 			printf ("\nmq_close qds2 error!\n");	
-			return -5;
+			return -6;
 		}
 	}
 	return 0;

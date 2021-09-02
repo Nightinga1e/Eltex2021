@@ -37,7 +37,7 @@ int main()
 	if((mqd_t)-1 == qds2) // при провале
 	{
 		printf("\nmq_open qds2 error!\n");
-		return -1;
+		return -2;
 	}
 
 	mypid = fork();
@@ -48,7 +48,7 @@ int main()
 		if(-1 == result)// при неудаче
 		{
 			printf("\nmq_send error!\n");
-			return -2;
+			return -3;
 		}
 	}else
 	{//предок
@@ -57,7 +57,7 @@ int main()
 		if(-1 == result)//при неудаче
 		{
 			printf("\nmq_receive error!\n");
-			return -3;
+			return -4;
 		}
 		printf("\n%s\n", gettext);
 	
@@ -67,28 +67,28 @@ int main()
 		if (-1 == clresult)
 		{
 			printf ("\nmq_close qds1 error!\n");
-			return -4;
+			return -5;
 		}	
 
 		clresult = mq_close(qds2);
 		if (-1 == clresult)
 		{
 			printf ("\nmq_close qds2 error!\n");
-			return -4;
+			return -6;
 		}	
 
 		clresult = mq_unlink(Q_NAME1);
 		if(-1 == clresult)
 		{
 			printf("\nmq_unlink Q_NAME1 error!\n");
-			return -5;
+			return -7;
 		}
 
 		clresult = mq_unlink(Q_NAME2);
 		if(-1 == clresult)
 		{
 			printf("\nmq_unlink Q_NAME2 error!\n");
-			return -5;
+			return -8;
 		} 
 	}
 	return 0;
