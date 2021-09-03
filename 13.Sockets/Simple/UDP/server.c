@@ -12,6 +12,7 @@ int main()
 {
 	int size;
 	int sock_fd;
+	int len;
 	int sendcheck, recvcheck, bindcheck;
 	char recvbuf[BUFSIZE] = "";
 	char sendbuf[BUFSIZE] = "Hello from server!";	
@@ -35,8 +36,8 @@ int main()
 		return -2;
 	}
 
-	size = sizeof(client);
-	recvcheck = recvfrom(sock_fd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&client, 0);
+	len = sizeof(client);
+	recvcheck = recvfrom(sock_fd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&client, &len);
 	if(-1 == recvcheck)
 	{
 		printf("\nRecvfrom error!\n");
@@ -44,7 +45,7 @@ int main()
 	}
 	printf("\nGet message from client: %s\n", recvbuf);
 
-	sendcheck = sendto(sock_fd, sendbuf, sizeof(sendbuf), 0, (struct sockaddr *)&client, 0);
+	sendcheck = sendto(sock_fd, sendbuf, sizeof(sendbuf), 0, (struct sockaddr *)&client, sizeof(client));
 	if(-1 == sendcheck)
 	{
 		printf("\nSendto error!\n");
