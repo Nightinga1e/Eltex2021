@@ -49,7 +49,7 @@ int main()
 	}
 
 	recv(new_fd, recvbuf, BUFSIZE, 0);
-	printf("Get message from client: %s", recvbuf);
+	printf("Get message from client: %s\n", recvbuf);
 	send(new_fd, sendbuf, BUFSIZE, 0);
 
 	close(new_fd);
