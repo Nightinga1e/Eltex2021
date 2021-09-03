@@ -28,7 +28,7 @@ int main()
 
 	send(sock_fd, sendbuf, BUFSIZE, 0);
 	recv(sock_fd, recvbuf, BUFSIZE, 0);
-	printf("Get message from client: %s\n", recvbuf);
+	printf("Get message from server: %s\n", recvbuf);
 	close(sock_fd);
 	return 0;
 }
