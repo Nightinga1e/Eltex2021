@@ -6,18 +6,26 @@
 #include <unistd.h>
 
 #define BUFSIZE 1024
+#define PORT 7627
 
 int main()
 {
 	int sock_fd;
 	int connectcheck;
-	struct sockaddr_un serv;
+	struct sockaddr_in serv;
 	char sendbuf[BUFSIZE] = "Hello from client!";
 	char recvbuf[BUFSIZE] = "";
 
-	sock_fd = socket(AF_LOCAL, SOCK_STREAM, 0);
-	serv.sun_family = AF_LOCAL;
-	strncpy(serv.sun_path, "Locsock", sizeof("Locksock"));
+	serv.sin_family = AF_INET;
+	serv.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv.sin_port = htons(PORT); 
+
+	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if(-1 == sock_fd)//при провале
+	{
+		printf("\nSocket creation error!\n");
+		return -1;
+	}
 
 	connectcheck = connect(sock_fd, (struct sockaddr*)&serv, sizeof(serv));
 	if(-1 == connectcheck)

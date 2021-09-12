@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #define BUFSIZE 1024
+#define PORT 7627
 
 int main()
 {
@@ -13,13 +14,15 @@ int main()
 	int len;
 	int bindcheck;
 	int listencheck;
-	struct sockaddr_un serv, client;
+	struct sockaddr_in serv, client;
 	char sendbuf[BUFSIZE] = "Hello from server!";
 	char recvbuf[BUFSIZE] = "";
-	serv.sun_family = AF_LOCAL;
-	strncpy(serv.sun_path, "Locsock", sizeof("Locksock"));
 
-	sock_fd = socket(AF_LOCAL, SOCK_STREAM, 0); //создаем сокет
+	serv.sin_family = AF_INET;
+	serv.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv.sin_port = htons(PORT); 
+
+	sock_fd = socket(AF_INET, SOCK_STREAM, 0); //создаем сокет
 	if(-1 == sock_fd)//при провале
 	{
 		printf("\nSocket creation error!\n");
