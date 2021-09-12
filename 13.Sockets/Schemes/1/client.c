@@ -7,9 +7,11 @@
 
 #define BUFSIZE 1024
 #define PORT 7627
+#define MAXTHR 2000
 
 int main()
 {
+	int counter = 0;
 	int sock_fd;
 	int connectcheck;
 	struct sockaddr_in serv;
@@ -27,16 +29,25 @@ int main()
 		return -1;
 	}
 
-	connectcheck = connect(sock_fd, (struct sockaddr*)&serv, sizeof(serv));
-	if(-1 == connectcheck)
+	while(counter<MAXTHR)
 	{
-		printf("\nConnect error!\n");
-		return -1;
+		connectcheck = connect(sock_fd, (struct sockaddr*)&serv, sizeof(serv));
+		if(-1 == connectcheck)
+		{
+			perror("\n Error: \n");
+			//printf("\nConnect error!\n");
+			close(sock_fd);
+			printf("\nCounter = %d\n", counter);
+			return -1;
+		}else{
+			counter++;
+			printf("\nCounter = %d\n", counter);
+			send(sock_fd, sendbuf, BUFSIZE, 0);
+			recv(sock_fd, recvbuf, BUFSIZE, 0);
+			printf("Get message from server: %s\n", recvbuf);
+		}
 	}
 
-	send(sock_fd, sendbuf, BUFSIZE, 0);
-	recv(sock_fd, recvbuf, BUFSIZE, 0);
-	printf("Get message from server: %s\n", recvbuf);
 	close(sock_fd);
 	return 0;
 }
