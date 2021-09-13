@@ -40,9 +40,9 @@ void* clhandler(void* mysock_fd)
 	struct sockaddr_in client[MAXTHR];
 	int len;
 		
-	while(thrnum<MAXTHR)
+	while(thrnum < MAXTHR)
 	{
-		len = sizeof(client[thrnum]);
+		//len = sizeof(client[thrnum]);
 		new_fd[thrnum] = accept(sock_fd, (struct sockaddr *)&client[thrnum], &len);
 		if(-1 == new_fd[thrnum])
 		{
@@ -51,13 +51,14 @@ void* clhandler(void* mysock_fd)
 		}
 
 		newargs[thrnum].fd = new_fd[thrnum];
-		pstatus = pthread_create(&threads[thrnum], NULL, clmsgs, (void*)&newargs);
+		printf("\nNumber is: %d\n", thrnum);
+		pstatus = pthread_create(&threads[thrnum], NULL, clmsgs, (void*)&newargs[thrnum]);
 		if(-1 == pstatus)
 		{
 			printf("\nclhandler pthread_create error!\n");
 			return (void*)-8;
 		}
-		thrnum++;
+		thrnum = thrnum + 1;
 	}	
 
 	for(int i = 0; i<thrnum; i++)
@@ -81,8 +82,8 @@ int main()
 	struct sockaddr_in serv;
 	pthread_t threads[MAXTHR];
 	pthread_t thread;
-	pthread_attr_t attr;
-	int attrres;
+//	pthread_attr_t attr;
+//	int attrres;
 	int pstatus;
 	int status_addr;
 	Args_t args;
