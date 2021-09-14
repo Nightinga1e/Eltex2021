@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 
 #define BUFSIZE 1024
-#define PORT 7627
+#define PORT 7628
 
 int main()
 {
@@ -42,6 +41,7 @@ int main()
 		return -3;
 	}	
 
+	len = sizeof(serv);
 	recvcheck = recvfrom(sock_fd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&serv, &len);
 	if(-1 == recvcheck)
 	{
