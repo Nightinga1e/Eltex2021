@@ -5,11 +5,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/udp.h>
+#include <netinet/ip.h>
 #include <arpa/inet.h>
 
 #define BUFSIZE 1024
 #define SOURCEPORT 7627
 #define DESTPORT 2776
+#define IDENT 4321
 
 int main()
 {
@@ -17,29 +19,48 @@ int main()
 	int concheck, sendcheck, recvcheck;
 	int size;
 	int fl = 1;
+	int val = 1;
 	socklen_t len;
 	char sendbuf[BUFSIZE] = "Hello from client!";
 	char packet[BUFSIZE];
 	char *mypacket;
 	char recvbuf[BUFSIZE] = "";
 	struct sockaddr_in serv;
+	struct iphdr *ip_hdr = (struct iphdr *) packet;
+	struct udphdr *udp_hdr = (struct udphdr *) (packet + sizeof(struct iphdr));
 	sock_fd = socket (AF_INET, SOCK_RAW, IPPROTO_UDP);
+
 	if(-1 == sock_fd)//при провале
 	{
 		perror("\nError : \n");
 		printf("\nSocket creation error!\n");
 		return -1;
 	}
+	setsockopt(sock_fd, IPPROTO_IP, IP_HDRINCL, &val, sizeof(&val));
 
 	serv.sin_family = AF_INET;
 	serv.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv.sin_port = htons(DESTPORT); 
 
-	struct udphdr *udp_hdr = (struct udphdr *) packet;
 	udp_hdr->source = htons(SOURCEPORT);
 	udp_hdr->dest = htons(DESTPORT);
 	udp_hdr->check = htons(0);
-	mypacket = (char *) (packet + sizeof(struct udphdr));
+
+	ip_hdr->version = 4;
+	ip_hdr->ihl = 5;
+	ip_hdr->tos = 0;
+	//ip_hdr->len = sizeof(struct iphdr) + sizeof(struct udphdr) + strlen(mypacket);
+	ip_hdr->tot_len = 0;	
+	ip_hdr->id = 0;
+	ip_hdr->check = 0;
+	ip_hdr->saddr = 0;
+	ip_hdr->id = htonl(IDENT);
+	ip_hdr->frag_off = 0;
+	ip_hdr->ttl = 255;
+	ip_hdr->protocol = 17; //UDP
+	ip_hdr->daddr = serv.sin_addr.s_addr; 
+
+	mypacket = (char *) (packet + sizeof(struct iphdr) + sizeof(struct udphdr));
 	strcpy(mypacket, sendbuf);
 	udp_hdr->len = htons(sizeof(struct udphdr) + strlen(mypacket));
 
