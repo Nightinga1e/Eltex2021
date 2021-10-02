@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #define BUFSIZE 1024
-#define PORT 2776
+#define PORT 24
 
 int main()
 {
