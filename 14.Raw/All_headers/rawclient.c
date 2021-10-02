@@ -12,11 +12,11 @@
 #include <arpa/inet.h>
 
 #define BUFSIZE 1024
-//#define SOURCEPORT 7627
-//#define DESTPORT 2776
+#define SOURCEPORT 7627
+#define DESTPORT 2776
 #define IDENT 4321
-#define SOURCEPORT 24
-#define DESTPORT 24
+//#define SOURCEPORT 24
+//#define DESTPORT 24
 
 const char *ifname = "enp0s3";
 
