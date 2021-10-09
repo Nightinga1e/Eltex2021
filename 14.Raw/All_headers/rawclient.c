@@ -22,10 +22,10 @@ const char *ifname = "enp0s3";
 
 int main()
 {
-	unsigned char dest_mac[6] = {0x08,0x00,0x27,0xee,0x73,0x6f}; 
+	unsigned char dest_mac[6] = {0x08,0x00,0x27,0xab,0x33,0x93}; 
 	unsigned char dest_ip[4] = {10,0,2,4};
-	unsigned char src_mac[6] = {0x08,0x00,0x27,0x1e,0x29,0xfe};
-	unsigned char src_ip[4] = {10,0,2,6};
+	unsigned char src_mac[6] = {0x08,0x00,0x27,0xa2,0xf0,0xc6};
+	unsigned char src_ip[4] = {10,0,2,15};
 	char buf[128]; //for checksum
 	int csum = 0; //cs
 	int cstmp = 0; //cs
@@ -67,29 +67,14 @@ int main()
 	}
 
 	memcpy(eth_hdr->ether_dhost, dest_mac, 6);
-	memcpy(eth_hdr->ether_shost, src_mac, 6);	
-	
-	udp_hdr->source = htons(SOURCEPORT);
-	udp_hdr->dest = htons(DESTPORT);
-	udp_hdr->check = htons(0);
-
-
-	ptr = (short *) packet;
-	for(int i = 0; i < 10; i++)
-	{
-		csum = csum + *ptr;
-		ptr++;
-	}
-	cstmp = csum >> 16;
-	csum = csum + cstmp;
-	csum = ~csum;
+	memcpy(eth_hdr->ether_shost, src_mac, 6);
+	eth_hdr->ether_type = htons(ETH_P_IP);	
 
 	ip_hdr->version = 4;
 	ip_hdr->ihl = 5;
 	ip_hdr->tos = 0;
 	ip_hdr->tot_len = 0;	
 	ip_hdr->id = 0;
-	ip_hdr->check = csum;
 	//ip_hdr->saddr = 0;
 	ip_hdr->id = htonl(IDENT);
 	ip_hdr->frag_off = 0;
@@ -98,7 +83,23 @@ int main()
 	//ip_hdr->daddr = sockll.sll_addr.s_addr; 
 	memcpy(&ip_hdr->saddr, src_ip, 4);
 	memcpy(&ip_hdr->daddr, dest_ip, 4);
+
+	ptr = (short *) ip_hdr;
+	for(int i = 0; i < 10; i++)
+	{
+		csum = csum + *ptr;
+		ptr++;
+	}
+	cstmp = csum >> 16;
+	csum = csum + cstmp;
+	csum = ~csum;
+	printf("\n%d\n", csum);
+
+	ip_hdr->check = csum;
 	
+	udp_hdr->source = htons(SOURCEPORT);
+	udp_hdr->dest = htons(DESTPORT);
+	udp_hdr->check = htons(0);
 	mypacket = (char *) (packet + sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct udphdr));
 	strcpy(mypacket, sendbuf);
 	udp_hdr->len = htons(sizeof(struct udphdr) + strlen(mypacket));
@@ -110,15 +111,6 @@ int main()
 		return -3;
 	}
 
-/*
-	recvcheck = recvfrom(sock_fd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr *)&serv, &len);
-	if(-1 == recvcheck)
-	{
-		printf("\nRecvfrom error!\n");
-		return -4;
-	}
-*/
-
 	char tmp[BUFSIZE];
 	len = sizeof(sockll);
 	while(fl)
@@ -129,10 +121,11 @@ int main()
 			printf("\nRecvfrom error!\n");
 			return -5;
 		}
-
+		printf("\n%s\n", recvbuf + 28);
+		/*
 		if(inet_ntop(sockll.sll_family, (void*)&(((struct sockaddr_ll *)&sockll)->sll_addr), tmp, sizeof(tmp)) == NULL)
 		{
-			perror("\nError: ");
+			perror("\nFamily error: ");
 			return -6;
 		}
 		
@@ -140,7 +133,7 @@ int main()
 		{
 			printf("(from %s): %s\n", tmp, recvbuf + 28);
 			fl = 0;
-		}
+		}*/
 	}
 	close(sock_fd);
 	return 0;
